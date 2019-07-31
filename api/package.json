@@ -1,0 +1,25 @@
+{
+  "name": "justnote_api",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "author": "Bo Jin",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.6.8",
+    "@types/typescript": "^2.0.0",
+    "nodemon": "^1.19.1",
+    "ts-node": "^8.3.0",
+    "types-installer": "^1.6.3",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development npm run build:live",
+    "build": "npx tsc -p .",
+    "build:live": "nodemon --watch './**/*.ts' --exec 'ts-node' ./index.ts",
+    "add-types": "npx types-installer install --toDev"
+  }
+}
