@@ -1,5 +1,4 @@
 import express from 'express';
-import constants from './config/constants';
 import middlewareConfig from './config/middleware';
 import apiRoutes from './modules';
 
@@ -18,7 +17,8 @@ app.listen(PORT, (err: any) => {
         throw err;
     } else {
         console.log(`
-          Server running on port: ${constants.PORT}
+          Server running on port: ${process.env.PORT}
+          MongoDB url: ${process.env.MONGO_URL}
           ---
           Running on ${process.env.NODE_ENV}
           ---
