@@ -28,7 +28,7 @@ const UserSchema = new Schema({
         trim: true,
         validate: [
             (email: any) => validator.isEmail(email),
-            'Uh oh, {VALUE} does not equal "something".'
+            'Uh oh, {VALUE} is not a valid email.'
         ]
     },
     avatar_url: {

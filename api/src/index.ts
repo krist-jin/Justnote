@@ -1,6 +1,7 @@
 import express from 'express';
 import middlewareConfig from './config/middleware';
 import apiRoutes from './modules';
+import './config/database';
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT as string) || 3000;

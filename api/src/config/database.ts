@@ -13,6 +13,7 @@ if (MONGO_URL) {
   try {
     mongoose.connect(MONGO_URL, connect_options);
   } catch (err) {
+    console.error(err)
     mongoose.createConnection(MONGO_URL, connect_options);
   }
 } else {
