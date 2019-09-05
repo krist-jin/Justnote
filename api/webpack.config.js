@@ -8,6 +8,7 @@ module.exports = {
     'index': './src/index.ts',
   },
   devtool: 'inline-source-map',
+  // devtool: 'source-map',
   output: {
     path: path.join(__dirname, 'build'),
     filename: '[name].bundle.js'
