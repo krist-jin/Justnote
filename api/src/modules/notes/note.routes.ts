@@ -6,7 +6,7 @@ import { authJwt } from '../../services/auth.services';
 const routes = Router();
 
 routes.post('/', authJwt, noteController.createNote);
-routes.get('/', authJwt, noteController.getAllNotes);
+routes.get('/', authJwt, noteController.listNotes);
 routes.get('/:id', authJwt, noteController.getNoteById);
 
 export default routes;
