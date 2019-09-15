@@ -7,7 +7,7 @@ const localStrategy = new LocalStrategy({
     usernameField: 'username'
 }, async (username, password, done) => {
     try {
-        const user: IUser = await User.findOne({ username });
+        const user: IUser = await User.findOne({ username }) as IUser;
         if (!user) {
             return done(null, false);
         } else if (!user.authenticateUser(password)) {
