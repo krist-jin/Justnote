@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import validator from 'validator';
 import { hashSync, compareSync } from 'bcrypt-nodejs';
-import jwt from 'jsonwebtoken';
 import uniqueValidator from 'mongoose-unique-validator';
+import { creatJwtToken } from '../../services/auth.services';
 
 export interface IUser extends Document {
     username: string;
@@ -10,7 +10,7 @@ export interface IUser extends Document {
     email: string;
     avatar_url: string;
     authenticateUser: (password: string) => boolean;
-    createToken: () => any;
+    creatUserJwtToken: () => any;
     toAuthJSON: () => any;
 }
 
@@ -66,18 +66,17 @@ UserSchema.methods = {
     },
 
     // create JWT token
-    createToken() {
-        return jwt.sign(
-            { _id: this._id },
-            process.env.JWT_SECRET as string
-        )
+    creatUserJwtToken() {
+        return creatJwtToken({
+            _id: this._id,
+            expires: Date.now() + parseInt(process.env.JWT_EXPIRATION_MS as string),
+        })
     },
 
     toAuthJSON() {
         return {
             _id: this._id,
-            username: this.username,
-            token: `JWT ${this.createToken()}`
+            username: this.username
         };
     }
 }

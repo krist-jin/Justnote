@@ -7,7 +7,7 @@ export default (app: Application) => {
     app.use('/api/v1/users', userRoutes);
     app.use('/api/v1/notes', noteRoutes);
 
-    // TODO: remove this: test JWT
+    // test JWT
     app.get('/hello', authJwt, (req, res) => {
         res.send('This is a private route!!!!');
     });

@@ -1,5 +1,6 @@
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import passport from 'passport';
@@ -16,6 +17,7 @@ export default (app: any) => {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
+    app.use(cookieParser());
     app.use(passport.initialize());  // apply passport
     if (isDev) {
         app.use(morgan('dev'));

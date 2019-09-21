@@ -3,16 +3,17 @@ import { Request, Response } from 'express';
 import { IUser } from '../users/user.model';
 import HTTPStatus from 'http-status';
 import { PAGINATION } from '../modules.constants';
+import { JwtPayload } from '../../services/auth.services';
 
 // before calling the functions here, the request must be authenticated first and the user object is set
 
 export async function createNote(req: Request, res: Response) {
     try {
-        console.log('got a createNote request')
-        const user: IUser = req.user as IUser;
+        // console.log('got a createNote request')
+        const jwtPayload: JwtPayload = req.user as JwtPayload;
         const note = await Note.create({
             ...req.body,
-            owner_id: user._id
+            owner_id: jwtPayload._id
         });
         return res.status(HTTPStatus.CREATED).json(note);
     } catch (e) {
@@ -23,12 +24,12 @@ export async function createNote(req: Request, res: Response) {
 
 export async function listNotes(req: Request, res: Response) {
     try {
-        const user: IUser = req.user as IUser;
+        const jwtPayload: JwtPayload = req.user as JwtPayload;
         const limit = parseInt(req.query.limit) || PAGINATION.limit;
         const skip = parseInt(req.query.skip) || PAGINATION.skip;
         const sort_by = parseInt(req.query.sort_by) || PAGINATION.sort_by;
         const sort_ascending = req.query.sort_ascending || PAGINATION.sort_ascending ? 1 : -1;
-        const notes = await Note.find({ owner_id: user._id })
+        const notes = await Note.find({ owner_id: jwtPayload._id })
             .sort({ [sort_by]: sort_ascending })
             .skip(skip)
             .limit(limit);
@@ -40,10 +41,10 @@ export async function listNotes(req: Request, res: Response) {
 
 export async function getNoteById(req: Request, res: Response) {
     try {
-        const user: IUser = req.user as IUser;
+        const jwtPayload: JwtPayload = req.user as JwtPayload;
         const note = await Note.findOne({
             _id: req.params.id,
-            owner_id: user._id  // only find in notes of the current user
+            owner_id: jwtPayload._id  // only find in notes of the current user
         });
         return res.status(HTTPStatus.OK).json(note);
     } catch (e) {
@@ -53,12 +54,12 @@ export async function getNoteById(req: Request, res: Response) {
 
 export async function updateNoteById(req: Request, res: Response) {
     try {
-        const user: IUser = req.user as IUser;
+        const jwtPayload: JwtPayload = req.user as JwtPayload;
         const note: any = await Note.findById(req.params.id);
         if (!note) {
             return res.sendStatus(HTTPStatus.BAD_REQUEST);
         }
-        if (!note.owner_id.equals(user._id)) {
+        if (!note.owner_id.equals(jwtPayload._id)) {
             return res.sendStatus(HTTPStatus.UNAUTHORIZED);
         }
 
@@ -75,13 +76,13 @@ export async function updateNoteById(req: Request, res: Response) {
 
 export async function deleteNoteById(req: Request, res: Response) {
     try {
-        const user: IUser = req.user as IUser;
+        const jwtPayload: JwtPayload = req.user as JwtPayload;
         const note: any = await Note.findById(req.params.id);
         if (!note) {
             return res.sendStatus(HTTPStatus.BAD_REQUEST);
         }
 
-        if (!note.owner_id.equals(user._id)) {
+        if (!note.owner_id.equals(jwtPayload._id)) {
             return res.sendStatus(HTTPStatus.UNAUTHORIZED);
         }
 
