@@ -10,7 +10,7 @@ export interface IUser extends Document {
     email: string;
     avatar_url: string;
     authenticateUser: (password: string) => boolean;
-    creatUserJwtToken: () => any;
+    creatUserJwtToken: (rememberMe: boolean) => any;
     toAuthJSON: () => any;
 }
 
@@ -66,10 +66,11 @@ UserSchema.methods = {
     },
 
     // create JWT token
-    creatUserJwtToken() {
+    creatUserJwtToken(rememberMe: boolean) {
         return creatJwtToken({
             _id: this._id,
-            expires: Date.now() + parseInt(process.env.JWT_EXPIRATION_MS as string),
+            expires: Date.now() + parseInt((rememberMe ? process.env.JWT_LONG_EXPIRATION_MS : process.env.JWT_SHORT_EXPIRATION_MS) as string),
+            remember_me: rememberMe
         })
     },
 

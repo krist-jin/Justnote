@@ -9,6 +9,7 @@ import HTTPStatus from 'http-status';
 export interface JwtPayload {
     _id: string;
     expires: number;
+    remember_me: boolean;
 }
 
 const localStrategy = new LocalStrategy({
@@ -63,10 +64,10 @@ export function authJwt(req: Request, res: Response, next: NextFunction) {
             if (err || !jwtPayload || !jwtPayload._id) {
                 return res.status(HTTPStatus.BAD_REQUEST).json({ err: err ? err : 'jwt token not valid' });
             }
-            
+
             const newJwtPayload: JwtPayload = {
                 ...jwtPayload,
-                expires: Date.now() + parseInt(process.env.JWT_EXPIRATION_MS as string),  // refresh the JwtPayload
+                expires: Date.now() + parseInt((jwtPayload.remember_me ? process.env.JWT_LONG_EXPIRATION_MS : process.env.JWT_SHORT_EXPIRATION_MS) as string),  // refresh the JwtPayload
             };
 
             req.login(newJwtPayload, { session: false }, (error) => {
@@ -74,7 +75,12 @@ export function authJwt(req: Request, res: Response, next: NextFunction) {
                     res.status(HTTPStatus.BAD_REQUEST).send({ error });
                 }
                 const newJwtToken: string = creatJwtToken(newJwtPayload);
-                res.cookie('jwt', newJwtToken, { httpOnly: true, secure: true });  // set the new jwt token to the cookie
+                const cookieOptions = {
+                    httpOnly: true,
+                    secure: true,
+                    ...(jwtPayload.remember_me ? { maxAge: parseInt(process.env.JWT_LONG_EXPIRATION_MS as string) } : {})
+                }
+                res.cookie('jwt', newJwtToken, cookieOptions);  // set the new jwt token to the cookie
             });
 
             return next();

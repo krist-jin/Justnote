@@ -16,8 +16,14 @@ export async function signup(req: Request, res: Response) {
 
 export function login(req: Request, res: Response, next: NextFunction) {
     const user: IUser = req.user as IUser;
-    const jwtPayload: JwtPayload = user.creatUserJwtToken();
-    res.cookie('jwt', jwtPayload, { httpOnly: true, secure: true });  // set the jwt in the cookie
+    const rememberMe = req.body.remember_me === 'true';
+    const jwtPayload: JwtPayload = user.creatUserJwtToken(rememberMe);
+    const cookieOptions = {
+        httpOnly: true,
+        secure: true,
+        ...(rememberMe ? { maxAge: parseInt(process.env.JWT_LONG_EXPIRATION_MS as string) } : {})
+    }
+    res.cookie('jwt', jwtPayload, cookieOptions);  // set the jwt in the cookie
     res.status(HTTPStatus.OK).json(user.toAuthJSON());
     return next();
 }
